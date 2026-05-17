@@ -1,0 +1,17 @@
+------------------------
+
+DB_HOST=localhost
+DB_PORT=5432
+DB_USERNAME=postgres
+DB_PASSWORD= ef62Sx4nb
+DB_NAME=ecommerce_db
+ 
+------------------------
+
+npm install @nestjs/typeorm typeorm pg  
+
+npm install @nestjs/config
+
+npm install class-validator class-transformer
+
+------------------------
