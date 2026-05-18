@@ -6,6 +6,7 @@ import { User } from './modules/users/entities/user.entity';
 import { City } from './modules/users/entities/city.entity';
 import { District } from './modules/users/entities/district.entity';
 import { CitySeed } from './modules/users/seeds/city.seed';
+import { DistrictSeed } from './modules/users/seeds/district.seed';
 
 @Module({
   imports: [
@@ -22,12 +23,12 @@ import { CitySeed } from './modules/users/seeds/city.seed';
       database: process.env.DB_NAME,
       entities: [User, City, District],
       synchronize: true,
-      logging: true,
+      logging: false,
     }),
-    TypeOrmModule.forFeature([City]),
+    TypeOrmModule.forFeature([City, District]),
     UsersModule,
   ],
   controllers: [],
-  providers: [CitySeed],
+  providers: [CitySeed, DistrictSeed],
 })
 export class AppModule {}

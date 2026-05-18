@@ -1,16 +1,10 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, PrimaryColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { City } from './city.entity';
 
 @Entity('districts')
 export class District {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  @PrimaryColumn({ type: 'varchar', length: 7 })
+  id!: string; // مثلاً: 0110001
 
   @Column({ type: 'varchar', length: 50 })
   name!: string;

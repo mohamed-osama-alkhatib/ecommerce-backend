@@ -1,4 +1,3 @@
-// src/database/seeds/city.seed.ts
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -33,6 +32,6 @@ export class CitySeed implements OnModuleInit {
     ];
 
     await this.cityRepository.save(cities);
-    console.log('✅ Cities seeded successfully!');
+    console.log('✅ Cities seeded!');
   }
 }

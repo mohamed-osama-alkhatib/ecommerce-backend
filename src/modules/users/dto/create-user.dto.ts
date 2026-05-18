@@ -1,3 +1,4 @@
+// create-user.dto.ts
 import {
   IsString,
   IsInt,
@@ -5,41 +6,81 @@ import {
   Max,
   Length,
   IsEnum,
-  IsNotEmpty,
   Matches,
+  IsUrl,
+  IsBoolean,
+  IsOptional,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { Gender, Role } from '../entities/user.entity';
 
 export class CreateUserDto {
-  @IsString()
-  @Length(3, 15, { message: 'الاسم الأول يجب أن يكون بين 3 و 15 حرف' })
+  @IsString({ message: 'Avatar must be a string' })
+  @IsUrl({}, { message: 'Avatar must be a valid URL' })
+  avatar!: string;
+
+  @IsString({ message: 'First name must be a string' })
+  @Length(3, 15, {
+    message: 'First name must be between 3 and 15 characters',
+  })
   firstName!: string;
 
-  @IsString()
-  @Length(3, 15, { message: 'الاسم الأخير يجب أن يكون بين 3 و 15 حرف' })
+  @IsString({ message: 'Last name must be a string' })
+  @Length(3, 15, {
+    message: 'Last name must be between 3 and 15 characters',
+  })
   lastName!: string;
 
-  @IsInt()
-  @Min(18, { message: 'العمر يجب أن يكون 18 أو أكثر' })
-  @Max(120, { message: 'العمر يجب أن يكون 120 أو أقل' })
+  @Type(() => Number)
+  @IsInt({ message: 'Age must be a number' })
+  @Min(18, { message: 'Age must be at least 18' })
+  @Max(120, { message: 'Age must not exceed 120' })
   age!: number;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: 'City code must be a string' })
+  @Length(3, 3, {
+    message: 'City code must be exactly 3 characters',
+  })
   cityCode!: string;
 
-  @IsString()
+  @IsString({ message: 'District id must be a string' })
+  @Length(7, 7, {
+    message: 'District id must be exactly 7 characters',
+  })
   districtId!: string;
 
-  @IsString()
+  @IsString({ message: 'Phone number must be a string' })
   @Matches(/^09\d{8}$/, {
-    message: 'رقم الهاتف يجب أن يبدأ بـ 09 ويتكون من 10 أرقام',
+    message: 'Phone must start with 09 and contain 10 digits',
   })
   phoneNumber!: string;
 
-  @IsEnum(Gender)
+  @IsString({ message: 'ShamCash ID must be a string' })
+  @Length(16, 16, {
+    message: 'ShamCash ID must be exactly 16 digits',
+  })
+  shamCashId!: string;
+
+  @IsOptional()
+  @IsString({ message: 'Verification code must be a string' })
+  @Length(6, 6, {
+    message: 'Verification code must be exactly 6 digits',
+  })
+  verificationCode?: string;
+
+  @Type(() => Boolean)
+  @IsBoolean({ message: 'isActive must be true or false' })
+  @IsOptional()
+  isActive?: boolean;
+
+  @IsEnum(Gender, {
+    message: 'Gender must be either male or female',
+  })
   gender!: Gender;
 
-  @IsEnum(Role)
-  role: Role = Role.CLIENT;
+  @IsEnum(Role, {
+    message: 'Role must be admin, employee, or client',
+  })
+  @IsOptional()
+  role?: Role;
 }
