@@ -1,4 +1,4 @@
-import { Body, Injectable, ValidationPipe } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -17,10 +17,10 @@ export class UsersService {
     private districtRepository: Repository<District>,
   ) {}
 
-  async create(
-    @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
-    createUserDto: CreateUserDto,
-  ) {
+  async create(createUserDto: CreateUserDto, user) {
+    const payload = user.payload;
+    console.log(payload);
+
     const { cityCode, districtId, ...rest } = createUserDto;
 
     const city = await this.cityRepository.findOne({
@@ -39,13 +39,13 @@ export class UsersService {
       throw new Error('District not found');
     }
 
-    const user = this.userRepository.create({
+    const userData = this.userRepository.create({
       ...rest,
       city,
       district,
     });
 
-    return await this.userRepository.save(user);
+    return await this.userRepository.save(userData);
   }
 
   async findAll() {

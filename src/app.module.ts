@@ -7,6 +7,7 @@ import { City } from './modules/users/entities/city.entity';
 import { District } from './modules/users/entities/district.entity';
 import { CitySeed } from './modules/users/seeds/city.seed';
 import { DistrictSeed } from './modules/users/seeds/district.seed';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -27,6 +28,11 @@ import { DistrictSeed } from './modules/users/seeds/district.seed';
     }),
     TypeOrmModule.forFeature([City, District]),
     UsersModule,
+    JwtModule.register({
+      global: true,
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '60s' },
+    }),
   ],
   controllers: [],
   providers: [CitySeed, DistrictSeed],
