@@ -5,6 +5,8 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  app.setGlobalPrefix('api/v1');
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -14,9 +16,6 @@ async function bootstrap() {
   );
 
   await app.listen(3000);
-  console.log(
-    // 'Server running on http://localhost:3000',
-    'BEST REGARDS TO THE ESTEEMED SULTAN OSAMA',
-  );
+  console.log('Server running on http://localhost:3000/api/v1');
 }
 bootstrap();

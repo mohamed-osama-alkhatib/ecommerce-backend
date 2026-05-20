@@ -24,57 +24,77 @@ export enum Role {
 
 @Entity('users')
 export class User {
+  // ----- ID -------------------------------------------------------------
   @PrimaryColumn({ type: 'varchar', length: 16 })
   id!: string;
 
-  @Column({ type: 'varchar' })
-  avatar!: string;
+  // ----- AVATAR -------------------------------------------------------------
+  @Column({ type: 'varchar', nullable: true })
+  avatar?: string;
 
+  // ----- FIRST NAME -------------------------------------------------------------
   @Column({ type: 'varchar', length: 15 })
   firstName!: string;
 
+  // ----- LAST NAME -------------------------------------------------------------
   @Column({ type: 'varchar', length: 15 })
   lastName!: string;
 
+  // ----- AGE -------------------------------------------------------------
   @Column({ type: 'int' })
   age!: number;
 
+  // ----- CITY ID -------------------------------------------------------------
   @ManyToOne(() => City, { eager: true })
   @JoinColumn({ name: 'city_code' })
   city!: City;
 
+  // ----- DISTRICT ID -------------------------------------------------------------
   @ManyToOne(() => District, { eager: true })
   @JoinColumn({ name: 'district_id' })
   district!: District;
 
+  // ----- PHONE NUMBER -------------------------------------------------------------
   @Column({ type: 'varchar', length: 10, unique: true })
   phoneNumber!: string;
 
+  // ----- PASSWORD -------------------------------------------------------------
+  @Column({ type: 'varchar' })
+  password!: string;
+
+  // ----- CREATED AT -------------------------------------------------------------
   @CreateDateColumn()
   createdAt!: Date;
 
-  @Column({ type: 'varchar', length: 16, unique: true })
-  shamCashId!: string;
+  // ----- SHAMCASH ID -------------------------------------------------------------
+  @Column({ type: 'varchar', length: 16, unique: true, nullable: true })
+  shamCashId?: string;
 
+  // ----- VERIFICATION CODE -------------------------------------------------------------
   @Column({ type: 'varchar', length: 6, nullable: true })
   verificationCode?: string;
 
-  @Column({ type: 'boolean', default: false })
-  isActive!: boolean;
+  // ----- IS ACTIVE -------------------------------------------------------------
+  @Column({ type: 'boolean', default: false, nullable: true })
+  isActive?: boolean;
 
+  // ----- GENDER -------------------------------------------------------------
   @Column({
     type: 'enum',
     enum: Gender,
   })
   gender!: Gender;
 
+  // ----- ROLE -------------------------------------------------------------
   @Column({
     type: 'enum',
     enum: Role,
     default: Role.CLIENT,
+    nullable: true,
   })
-  role!: Role;
+  role?: Role;
 
+  // ----- BL -------------------------------------------------------------
   @BeforeInsert()
   generateId() {
     const year = new Date().getFullYear();

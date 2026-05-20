@@ -1,11 +1,9 @@
 ------------------------
 
-DB_HOST=localhost
-DB_PORT=5432
-DB_USERNAME=postgres
-DB_PASSWORD= ef62Sx4nb
-DB_NAME=ecommerce_db
- 
+ nest g resource modules/users   
+
+ nest g resource modules/auth   
+
 ------------------------
 
 npm install @nestjs/typeorm typeorm pg  
@@ -17,3 +15,7 @@ npm install class-validator class-transformer
 ------------------------
 
 npm install --save @nestjs/jwt
+
+npm i bcrypt
+
+npm i -D @types/bcrypt
