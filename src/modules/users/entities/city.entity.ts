@@ -1,9 +1,10 @@
+// city.entity.ts
 import { Entity, PrimaryColumn, Column, OneToMany } from 'typeorm';
 import { District } from './district.entity';
 
 @Entity('cities')
 export class City {
-  @PrimaryColumn({ type: 'varchar', length: 3 })
+  @PrimaryColumn({ type: 'varchar', length: 3, unique: true })
   code!: string;
 
   @Column({ type: 'varchar', length: 50, unique: true })

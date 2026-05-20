@@ -12,20 +12,6 @@ import { User } from './entities/user.entity';
 import { City } from './entities/city.entity';
 import { District } from './entities/district.entity';
 
-const DataResponse = [
-  'createdAt',
-  'id',
-  'firstName',
-  'lastName',
-  'age',
-  'gender',
-  'phoneNumber',
-  'city',
-  'district',
-  'shamCashId',
-  'role',
-];
-
 @Injectable()
 export class UsersService {
   constructor(
@@ -45,6 +31,7 @@ export class UsersService {
     // city & district
     const { city, district, ...rest } = createUserDto;
 
+    // check city
     const isCity = await this.cityRepository.findOne({
       where: { code: city },
     });
@@ -53,54 +40,125 @@ export class UsersService {
       throw new NotFoundException('City not found');
     }
 
+    // check district belongs to city
     const isDistrict = await this.districtRepository.findOne({
-      where: { id: district },
+      where: {
+        id: district,
+        city: {
+          code: city,
+        },
+      },
+      relations: {
+        city: true,
+      },
     });
 
     if (!isDistrict) {
-      throw new NotFoundException('District not found');
+      throw new NotFoundException('District does not belong to selected city');
     }
-    // city & district //
+
     // phone number
     const ifUserExist = await this.userRepository.findOne({
       where: { phoneNumber: createUserDto.phoneNumber },
     });
+
     if (ifUserExist) {
       throw new HttpException('User already exist', 400);
     }
-    // phone number //
+
     // password
     const saltOrRounds = Number(process.env.SALT_OR_ROUNDS);
+
     const password = await bcrypt.hash(createUserDto.password, saltOrRounds);
-    // password //
+
+    // create user
     const user = this.userRepository.create({
       ...rest,
       city: isCity,
       district: isDistrict,
       password,
+      isActive: true,
     });
+
+    const savedUser = await this.userRepository.save(user);
+
+    const createdUser = await this.userRepository.findOne({
+      where: { id: savedUser.id },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        age: true,
+        gender: true,
+        phoneNumber: true,
+        shamCashId: true,
+        role: true,
+        createdAt: true,
+        city: {
+          code: true,
+          name: true,
+        },
+        district: {
+          id: true,
+          name: true,
+        },
+      },
+    });
+
+    if (!createdUser) {
+      throw new NotFoundException('User not found after creation');
+    }
 
     return {
       status: 201,
-      message: 'user created successfully',
-      data: await this.userRepository.save(user),
+      message: 'User created successfully',
+      data: createdUser,
     };
   }
+  // =================================================================================
+  async findAll(query) {
+    const {
+      limit = 10,
+      skip = 0,
+      sort = 'createdAt',
+      order = 'ASC', //ASC or DESC
+      role,
+      city,
+    } = query;
 
-  async findAll(): Promise<{
-    status: number;
-    message: string;
-    data: User[];
-  }> {
+    const qb = this.userRepository
+      .createQueryBuilder('user')
+      .leftJoinAndSelect('user.city', 'city')
+      .leftJoinAndSelect('user.district', 'district');
+
+    // filters
+    if (role) {
+      qb.andWhere('user.role = :role', { role });
+    }
+
+    if (city) {
+      qb.andWhere('city.code = :city', { city });
+    }
+
+    // pagination
+    qb.skip(Number(skip));
+    qb.take(Number(limit));
+
+    // sorting
+    qb.orderBy(`user.${sort}`, order.toUpperCase() as 'ASC' | 'DESC');
+
+    const [users, total] = await qb.getManyAndCount();
+
     return {
       status: 200,
       message: 'users retrieved successfully',
-      data: await this.userRepository.find({
-        select: DataResponse as (keyof User)[],
-      }),
+      total,
+      limit: Number(limit),
+      skip: Number(skip),
+      data: users,
     };
   }
-
+  // =================================================================================
   async findOne(id: string): Promise<{
     status: number;
     message: string;
@@ -108,7 +166,20 @@ export class UsersService {
   }> {
     const user = await this.userRepository.findOne({
       where: { id },
-      select: DataResponse as (keyof User)[],
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        phoneNumber: true,
+        city: {
+          code: true,
+          name: true,
+        },
+        district: {
+          id: true,
+          name: true,
+        },
+      },
     });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -128,54 +199,91 @@ export class UsersService {
     message: string;
     data: User;
   }> {
-    // check
+    // check user
     const user = await this.userRepository.findOne({
       where: { id },
+      relations: {
+        city: true,
+        district: true,
+      },
     });
 
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    // check //
 
     const { city, district, password, ...rest } = updateUserDto;
-    const updateData: any = { ...rest };
 
-    // city & district
+    const updateData: Partial<User> = { ...rest };
 
-    if (city !== undefined) {
-      const isCity = await this.cityRepository.findOne({
-        where: { code: city },
-      });
+    // final values after update
+    const finalCityCode = city ?? user.city.code;
+    const finalDistrictId = district ?? user.district.id;
 
-      if (!isCity) {
-        throw new NotFoundException('City not found');
-      }
-      updateData.city = isCity;
+    // validate city
+    const isCity = await this.cityRepository.findOne({
+      where: {
+        code: finalCityCode,
+      },
+    });
+
+    if (!isCity) {
+      throw new NotFoundException('City not found');
     }
-    if (district !== undefined) {
-      const isDistrict = await this.districtRepository.findOne({
-        where: { id: district },
-      });
 
-      if (!isDistrict) {
-        throw new NotFoundException('District not found');
-      }
-      updateData.district = isDistrict;
+    // validate district belongs to city
+    const isDistrict = await this.districtRepository.findOne({
+      where: {
+        id: finalDistrictId,
+        city: {
+          code: finalCityCode,
+        },
+      },
+      relations: {
+        city: true,
+      },
+    });
+
+    if (!isDistrict) {
+      throw new NotFoundException('District does not belong to selected city');
     }
-    // city & district //
+
+    // update city & district
+    updateData.city = isCity;
+    updateData.district = isDistrict;
+
     // password
     if (password) {
       const saltOrRounds = Number(process.env.SALT_OR_ROUNDS);
+
       updateData.password = await bcrypt.hash(password, saltOrRounds);
     }
-    // password //
 
+    // update
     await this.userRepository.update(id, updateData);
 
+    // get updated user
     const updatedUser = await this.userRepository.findOne({
       where: { id },
-      select: DataResponse as (keyof User)[],
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        age: true,
+        gender: true,
+        phoneNumber: true,
+        shamCashId: true,
+        role: true,
+        createdAt: true,
+        city: {
+          code: true,
+          name: true,
+        },
+        district: {
+          id: true,
+          name: true,
+        },
+      },
     });
 
     if (!updatedUser) {

@@ -9,6 +9,7 @@ import {
   Param,
   Patch,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -33,15 +34,17 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
+  // =================================================================================
   // @Docs admin can get all users
   // @Route GET users
   // @Accuss private "admin"
   @Roles(['admin'])
   @Get()
   @UseGuards(AuthGuard)
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@Query() query) {
+    return this.usersService.findAll(query);
   }
+  // =================================================================================
 
   // @Docs admin can get user
   // @Route GET one user
