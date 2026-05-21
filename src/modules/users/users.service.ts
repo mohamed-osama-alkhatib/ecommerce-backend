@@ -1,6 +1,11 @@
 // users.service.ts
 // libs
-import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -22,7 +27,7 @@ export class UsersService {
     @InjectRepository(District)
     private districtRepository: Repository<District>,
   ) {}
-
+  // ================================================================================ create
   async create(createUserDto: CreateUserDto): Promise<{
     status: number;
     message: string;
@@ -115,15 +120,26 @@ export class UsersService {
       data: createdUser,
     };
   }
-  // =================================================================================
+  // ================================================================================ findAll
   async findAll(query) {
     const {
       limit = 10,
       skip = 0,
+
+      // sorting
       sort = 'createdAt',
-      order = 'ASC', //ASC or DESC
+      order = 'ASC',
+
+      // filters
       role,
       city,
+      district,
+
+      // search
+      search,
+
+      // age
+      ages,
     } = query;
 
     const qb = this.userRepository
@@ -131,34 +147,143 @@ export class UsersService {
       .leftJoinAndSelect('user.city', 'city')
       .leftJoinAndSelect('user.district', 'district');
 
-    // filters
-    if (role) {
-      qb.andWhere('user.role = :role', { role });
+    // =========================================================
+    // SEARCH
+    // =========================================================
+    // example:
+    // ?search=اس
+
+    if (search) {
+      qb.andWhere(
+        `
+      (
+        user.firstName ILIKE :search
+        OR
+        user.lastName ILIKE :search
+      )
+      `,
+        {
+          search: `%${search}%`,
+        },
+      );
     }
+
+    // =========================================================
+    // ROLE
+    // =========================================================
+    // example:
+    // ?role=client
+
+    if (role) {
+      qb.andWhere('user.role = :role', {
+        role,
+      });
+    }
+
+    // =========================================================
+    // CITY
+    // =========================================================
+    // example:
+    // ?city=011
 
     if (city) {
-      qb.andWhere('city.code = :city', { city });
+      qb.andWhere('city.code = :city', {
+        city,
+      });
     }
 
-    // pagination
+    // =========================================================
+    // DISTRICT
+    // =========================================================
+    // example:
+    // ?district=0110001
+
+    if (district) {
+      qb.andWhere('district.id = :district', {
+        district,
+      });
+    }
+
+    // =========================================================
+    // AGES
+    // =========================================================
+    // example:
+    // ?ages=25,40,34
+
+    if (ages?.length) {
+      const agesArray = ages.map((age) => {
+        const parsedAge = Number(age);
+
+        if (isNaN(parsedAge)) {
+          throw new BadRequestException(`Invalid age value: ${age}`);
+        }
+
+        if (parsedAge < 1 || parsedAge > 120) {
+          throw new BadRequestException(`Invalid age range: ${age}`);
+        }
+
+        return parsedAge;
+      });
+
+      qb.andWhere('user.age IN (:...ages)', {
+        ages: agesArray,
+      });
+    }
+
+    // =========================================================
+    // PAGINATION
+    // =========================================================
+
     qb.skip(Number(skip));
     qb.take(Number(limit));
 
-    // sorting
-    qb.orderBy(`user.${sort}`, order.toUpperCase() as 'ASC' | 'DESC');
+    // =========================================================
+    // SORTING
+    // =========================================================
+
+    const allowedSortFields = [
+      'createdAt',
+      'firstName',
+      'lastName',
+      'age',
+      'role',
+    ];
+
+    const finalSort = allowedSortFields.includes(sort) ? sort : 'createdAt';
+
+    const finalOrder = order.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+
+    qb.orderBy(`user.${finalSort}`, finalOrder);
+
+    // =========================================================
+    // EXECUTE
+    // =========================================================
 
     const [users, total] = await qb.getManyAndCount();
 
     return {
       status: 200,
-      message: 'users retrieved successfully',
-      total,
-      limit: Number(limit),
-      skip: Number(skip),
+      message: 'Users retrieved successfully',
+
+      pagination: {
+        total,
+        limit: Number(limit),
+        skip: Number(skip),
+        pages: Math.ceil(total / Number(limit)),
+      },
+
+      filters: {
+        role,
+        city,
+        district,
+        search,
+        ages,
+      },
+
       data: users,
     };
   }
-  // =================================================================================
+  // ================================================================================ findOne
   async findOne(id: string): Promise<{
     status: number;
     message: string;
@@ -190,7 +315,7 @@ export class UsersService {
       data: user,
     };
   }
-
+  // ================================================================================ update
   async update(
     id: string,
     updateUserDto: UpdateUserDto,
@@ -296,7 +421,7 @@ export class UsersService {
       data: updatedUser,
     };
   }
-
+  // ================================================================================ delete
   async delete(id: string): Promise<{
     status: number;
     message: string;

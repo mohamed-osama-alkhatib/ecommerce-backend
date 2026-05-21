@@ -16,6 +16,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { AuthGuard } from './guard/Auth.guard';
 import { Roles } from './decorator/user.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { FindUsersDto } from './find-users.dto';
 
 @Controller('users')
 export class UsersController {
@@ -41,7 +42,7 @@ export class UsersController {
   @Roles(['admin'])
   @Get()
   @UseGuards(AuthGuard)
-  findAll(@Query() query) {
+  findAll(@Query() query: FindUsersDto) {
     return this.usersService.findAll(query);
   }
   // =================================================================================
