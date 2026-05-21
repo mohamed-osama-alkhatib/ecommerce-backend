@@ -1,14 +1,16 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { JwtModule } from '@nestjs/jwt';
+// modules
 import { UsersModule } from './modules/users/users.module';
+// entities
 import { User } from './modules/users/entities/user.entity';
 import { City } from './modules/users/entities/city.entity';
 import { District } from './modules/users/entities/district.entity';
+// seeds
 import { CitySeed } from './modules/users/seeds/city.seed';
 import { DistrictSeed } from './modules/users/seeds/district.seed';
-import { JwtModule } from '@nestjs/jwt';
-import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -34,7 +36,6 @@ import { AuthModule } from './modules/auth/auth.module';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '60s' },
     }),
-    AuthModule,
   ],
   controllers: [],
   providers: [CitySeed, DistrictSeed],

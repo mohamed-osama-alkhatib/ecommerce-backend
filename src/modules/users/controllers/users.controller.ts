@@ -13,15 +13,15 @@ import {
   Query,
 } from '@nestjs/common';
 // services
-import { UsersService } from './users.service';
+import { UsersService } from '../services/users.service';
 // dto
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { FindUsersDto } from './dto/find-users.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { FindUsersDto } from '../dto/find-users.dto';
 // guards
-import { AuthGuard } from './guard/Auth.guard';
+import { AuthGuard } from '../guards/jwt-auth.guard';
 // decorators
-import { Roles } from './decorator/user.decorator';
+import { Roles } from '../decorators/roles.decorator';
 
 @Controller('users')
 export class UsersController {

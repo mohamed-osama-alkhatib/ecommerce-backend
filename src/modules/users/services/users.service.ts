@@ -10,12 +10,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 // dto
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
 // entity
-import { User } from './entities/user.entity';
-import { City } from './entities/city.entity';
-import { District } from './entities/district.entity';
+import { User } from '../entities/user.entity';
+import { City } from '../entities/city.entity';
+import { District } from '../entities/district.entity';
 
 @Injectable()
 export class UsersService {
@@ -474,7 +474,7 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    await this.userRepository.delete(id);
+    await this.userRepository.update(id, { isActive: false });
 
     return {
       status: 200,

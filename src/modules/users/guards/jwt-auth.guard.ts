@@ -1,4 +1,4 @@
-// Auth.guard.ts
+// jwt-auth.guard.ts
 // libs
 import {
   CanActivate,
@@ -10,7 +10,7 @@ import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
 // decorators
-import { Roles } from '../decorator/user.decorator';
+import { Roles } from '../decorators/roles.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -36,6 +36,9 @@ export class AuthGuard implements CanActivate {
       const payload = await this.jwtService.verifyAsync(token, {
         secret: process.env.JWT_SECRET,
       });
+
+      if (!payload._id) request['user'] = payload;
+
       if (
         !payload.role ||
         payload.role === '' ||
