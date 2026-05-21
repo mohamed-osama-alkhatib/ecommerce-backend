@@ -1,5 +1,7 @@
 // city.entity.ts
+// libs
 import { Entity, PrimaryColumn, Column, OneToMany } from 'typeorm';
+// entities
 import { District } from './district.entity';
 
 @Entity('cities')

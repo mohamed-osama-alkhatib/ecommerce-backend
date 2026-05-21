@@ -1,14 +1,16 @@
 // Auth.guard.ts
+// libs
 import {
   CanActivate,
   ExecutionContext,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { Roles } from '../decorator/user.decorator';
+import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
+// decorators
+import { Roles } from '../decorator/user.decorator';
 
 @Injectable()
 export class AuthGuard implements CanActivate {

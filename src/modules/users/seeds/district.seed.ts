@@ -1,10 +1,12 @@
+// district.seed.ts
+// libs
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-
+// entities
 import { District } from '../entities/district.entity';
 import { City } from '../entities/city.entity';
-
+// data
 import { districtsData } from '../data/districts.data';
 
 @Injectable()

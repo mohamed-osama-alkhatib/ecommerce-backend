@@ -1,5 +1,9 @@
+// update-user.dto.ts
+// libs
 import { PartialType } from '@nestjs/mapped-types';
+// dto
 import { CreateUserDto } from './create-user.dto';
+// entities
 import { Gender, Role } from '../entities/user.entity';
 
 export class UpdateUserDto extends PartialType(CreateUserDto) {

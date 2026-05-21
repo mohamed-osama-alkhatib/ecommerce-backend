@@ -1,3 +1,4 @@
+// districts.data.ts
 export const districtsData: Record<string, string[]> = {
   '011': ['الميدان', 'كفرسوسة', 'باب توما', 'المزة'],
   '021': ['صلاح الدين', 'السكري', 'الجميلية', 'الحمدانية'],

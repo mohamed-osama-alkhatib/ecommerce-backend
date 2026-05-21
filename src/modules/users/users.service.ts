@@ -27,7 +27,9 @@ export class UsersService {
     @InjectRepository(District)
     private districtRepository: Repository<District>,
   ) {}
-  // ================================================================================ create
+  // =========================================================
+  // CREATE
+  // =========================================================
   async create(createUserDto: CreateUserDto): Promise<{
     status: number;
     message: string;
@@ -120,7 +122,9 @@ export class UsersService {
       data: createdUser,
     };
   }
-  // ================================================================================ findAll
+  // =========================================================
+  // FIND ALL
+  // =========================================================
   async findAll(query) {
     const {
       limit = 10,
@@ -144,12 +148,36 @@ export class UsersService {
 
     const qb = this.userRepository
       .createQueryBuilder('user')
-      .leftJoinAndSelect('user.city', 'city')
-      .leftJoinAndSelect('user.district', 'district');
 
-    // =========================================================
+      // relations
+      .leftJoin('user.city', 'city')
+      .leftJoin('user.district', 'district')
+
+      // select user
+      .select([
+        'user.id',
+        'user.avatar',
+        'user.firstName',
+        'user.lastName',
+        'user.age',
+        'user.phoneNumber',
+        'user.createdAt',
+        'user.gender',
+        'user.shamCashId',
+        'user.role',
+
+        // city
+        'city.code',
+        'city.name',
+
+        // district
+        'district.id',
+        'district.name',
+      ]);
+
+    // ========================
     // SEARCH
-    // =========================================================
+    // ========================
     // example:
     // ?search=اس
 
@@ -168,9 +196,9 @@ export class UsersService {
       );
     }
 
-    // =========================================================
+    // ========================
     // ROLE
-    // =========================================================
+    // ========================
     // example:
     // ?role=client
 
@@ -180,9 +208,9 @@ export class UsersService {
       });
     }
 
-    // =========================================================
+    // ========================
     // CITY
-    // =========================================================
+    // ========================
     // example:
     // ?city=011
 
@@ -192,9 +220,9 @@ export class UsersService {
       });
     }
 
-    // =========================================================
+    // ========================
     // DISTRICT
-    // =========================================================
+    // ========================
     // example:
     // ?district=0110001
 
@@ -204,9 +232,9 @@ export class UsersService {
       });
     }
 
-    // =========================================================
+    // ========================
     // AGES
-    // =========================================================
+    // ========================
     // example:
     // ?ages=25,40,34
 
@@ -230,16 +258,16 @@ export class UsersService {
       });
     }
 
-    // =========================================================
+    // ========================
     // PAGINATION
-    // =========================================================
+    // ========================
 
     qb.skip(Number(skip));
     qb.take(Number(limit));
 
-    // =========================================================
+    // ========================
     // SORTING
-    // =========================================================
+    // ========================
 
     const allowedSortFields = [
       'createdAt',
@@ -255,9 +283,9 @@ export class UsersService {
 
     qb.orderBy(`user.${finalSort}`, finalOrder);
 
-    // =========================================================
+    // ========================
     // EXECUTE
-    // =========================================================
+    // ========================
 
     const [users, total] = await qb.getManyAndCount();
 
@@ -283,7 +311,9 @@ export class UsersService {
       data: users,
     };
   }
-  // ================================================================================ findOne
+  // =========================================================
+  // FIND ONE
+  // =========================================================
   async findOne(id: string): Promise<{
     status: number;
     message: string;
@@ -293,8 +323,14 @@ export class UsersService {
       where: { id },
       select: {
         id: true,
+        avatar: true,
         firstName: true,
         lastName: true,
+        age: true,
+        gender: true,
+        shamCashId: true,
+        role: true,
+        createdAt: true,
         phoneNumber: true,
         city: {
           code: true,
@@ -315,7 +351,9 @@ export class UsersService {
       data: user,
     };
   }
-  // ================================================================================ update
+  // =========================================================
+  // UPDATE
+  // =========================================================
   async update(
     id: string,
     updateUserDto: UpdateUserDto,
@@ -392,14 +430,15 @@ export class UsersService {
       where: { id },
       select: {
         id: true,
+        avatar: true,
         firstName: true,
         lastName: true,
         age: true,
         gender: true,
-        phoneNumber: true,
         shamCashId: true,
         role: true,
         createdAt: true,
+        phoneNumber: true,
         city: {
           code: true,
           name: true,
@@ -421,7 +460,9 @@ export class UsersService {
       data: updatedUser,
     };
   }
-  // ================================================================================ delete
+  // =========================================================
+  // DELETE
+  // =========================================================
   async delete(id: string): Promise<{
     status: number;
     message: string;

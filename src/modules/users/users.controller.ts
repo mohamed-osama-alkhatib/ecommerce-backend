@@ -1,4 +1,5 @@
 // Users.controller.ts
+// libs
 import {
   Controller,
   Post,
@@ -11,20 +12,26 @@ import {
   Delete,
   Query,
 } from '@nestjs/common';
+// services
 import { UsersService } from './users.service';
+// dto
 import { CreateUserDto } from './dto/create-user.dto';
-import { AuthGuard } from './guard/Auth.guard';
-import { Roles } from './decorator/user.decorator';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { FindUsersDto } from './find-users.dto';
+import { FindUsersDto } from './dto/find-users.dto';
+// guards
+import { AuthGuard } from './guard/Auth.guard';
+// decorators
+import { Roles } from './decorator/user.decorator';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  // =========================================================
   // @Docs admin can create user
   // @Route POST user
   // @Accuss private "admin"
+  // =========================================================
   @Post()
   @Roles(['admin'])
   @UseGuards(AuthGuard)
@@ -35,21 +42,23 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  // =================================================================================
+  // =========================================================
   // @Docs admin can get all users
   // @Route GET users
   // @Accuss private "admin"
+  // =========================================================
   @Roles(['admin'])
   @Get()
   @UseGuards(AuthGuard)
   findAll(@Query() query: FindUsersDto) {
     return this.usersService.findAll(query);
   }
-  // =================================================================================
-
+  // =========================================================
   // @Docs admin can get user
   // @Route GET one user
   // @Accuss private "admin"
+  // =========================================================
+
   @Roles(['admin'])
   @Get(':id')
   @UseGuards(AuthGuard)
@@ -57,9 +66,11 @@ export class UsersController {
     return this.usersService.findOne(id);
   }
 
+  // =========================================================
   // @Docs admin can update user
   // @Route PATCH user
   // @Accuss private "admin"
+  // =========================================================
   @Patch(':id')
   @Roles(['admin'])
   @UseGuards(AuthGuard)
@@ -71,9 +82,11 @@ export class UsersController {
     return this.usersService.update(id, UpdateUserDto);
   }
 
+  // =========================================================
   // @Docs admin can delete user
   // @Route DELETE user
   // @Accuss private "admin"
+  // =========================================================
   @Delete(':id')
   @Roles(['admin'])
   @UseGuards(AuthGuard)

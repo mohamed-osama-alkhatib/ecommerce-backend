@@ -1,3 +1,4 @@
+// cities.data.ts
 export const citiesData = [
   { code: '011', name: 'دمشق', lat: 33.5138, lon: 36.2765 },
   { code: '021', name: 'حلب', lat: 36.2021, lon: 37.1343 },
