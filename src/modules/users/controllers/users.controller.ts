@@ -33,8 +33,8 @@ export class UsersController {
   // @Accuss private "admin"
   // =========================================================
   @Post()
-  @Roles(['admin'])
   @UseGuards(AuthGuard)
+  @Roles(['admin'])
   create(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
     createUserDto: CreateUserDto,
@@ -47,9 +47,9 @@ export class UsersController {
   // @Route GET users
   // @Accuss private "admin"
   // =========================================================
-  @Roles(['admin'])
   @Get()
   @UseGuards(AuthGuard)
+  @Roles(['admin'])
   findAll(@Query() query: FindUsersDto) {
     return this.usersService.findAll(query);
   }
@@ -59,9 +59,9 @@ export class UsersController {
   // @Accuss private "admin"
   // =========================================================
 
-  @Roles(['admin'])
   @Get(':id')
   @UseGuards(AuthGuard)
+  @Roles(['admin'])
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(id);
   }
@@ -72,8 +72,8 @@ export class UsersController {
   // @Accuss private "admin"
   // =========================================================
   @Patch(':id')
-  @Roles(['admin'])
   @UseGuards(AuthGuard)
+  @Roles(['admin'])
   update(
     @Param('id') id: string,
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
@@ -88,8 +88,8 @@ export class UsersController {
   // @Accuss private "admin"
   // =========================================================
   @Delete(':id')
-  @Roles(['admin'])
   @UseGuards(AuthGuard)
+  @Roles(['admin'])
   delete(@Param('id') id: string) {
     return this.usersService.delete(id);
   }

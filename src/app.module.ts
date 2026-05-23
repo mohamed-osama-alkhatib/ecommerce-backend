@@ -11,6 +11,7 @@ import { District } from './modules/users/entities/district.entity';
 // seeds
 import { CitySeed } from './modules/users/seeds/city.seed';
 import { DistrictSeed } from './modules/users/seeds/district.seed';
+import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { DistrictSeed } from './modules/users/seeds/district.seed';
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '60s' },
     }),
+    AuthModule,
   ],
   controllers: [],
   providers: [CitySeed, DistrictSeed],

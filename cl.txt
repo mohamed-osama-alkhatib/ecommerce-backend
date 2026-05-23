@@ -2,7 +2,7 @@
 
 nest g resource modules/users  
  
-nest g resource modules/myAccount  
+nest g resource modules/auth  
 
 ------------------------
 

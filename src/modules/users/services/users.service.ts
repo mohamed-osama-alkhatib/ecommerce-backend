@@ -16,6 +16,8 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { User } from '../entities/user.entity';
 import { City } from '../entities/city.entity';
 import { District } from '../entities/district.entity';
+// data
+import { dataSelectedToGet } from '../data/get.data';
 
 @Injectable()
 export class UsersService {
@@ -91,25 +93,7 @@ export class UsersService {
 
     const createdUser = await this.userRepository.findOne({
       where: { id: savedUser.id },
-      select: {
-        id: true,
-        firstName: true,
-        lastName: true,
-        age: true,
-        gender: true,
-        phoneNumber: true,
-        shamCashId: true,
-        role: true,
-        createdAt: true,
-        city: {
-          code: true,
-          name: true,
-        },
-        district: {
-          id: true,
-          name: true,
-        },
-      },
+      select: dataSelectedToGet as [],
     });
 
     if (!createdUser) {
@@ -321,26 +305,7 @@ export class UsersService {
   }> {
     const user = await this.userRepository.findOne({
       where: { id },
-      select: {
-        id: true,
-        avatar: true,
-        firstName: true,
-        lastName: true,
-        age: true,
-        gender: true,
-        shamCashId: true,
-        role: true,
-        createdAt: true,
-        phoneNumber: true,
-        city: {
-          code: true,
-          name: true,
-        },
-        district: {
-          id: true,
-          name: true,
-        },
-      },
+      select: dataSelectedToGet as [],
     });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -428,26 +393,7 @@ export class UsersService {
     // get updated user
     const updatedUser = await this.userRepository.findOne({
       where: { id },
-      select: {
-        id: true,
-        avatar: true,
-        firstName: true,
-        lastName: true,
-        age: true,
-        gender: true,
-        shamCashId: true,
-        role: true,
-        createdAt: true,
-        phoneNumber: true,
-        city: {
-          code: true,
-          name: true,
-        },
-        district: {
-          id: true,
-          name: true,
-        },
-      },
+      select: dataSelectedToGet as [],
     });
 
     if (!updatedUser) {

@@ -10,6 +10,8 @@ import { UpdateMyAccountDto } from '../dto/update-my-account.dto';
 import { User } from '../entities/user.entity';
 import { City } from '../entities/city.entity';
 import { District } from '../entities/district.entity';
+// data
+import { dataSelectedToGet } from '../data/get.data';
 
 @Injectable()
 export class MyAccountService {
@@ -22,7 +24,10 @@ export class MyAccountService {
     private districtRepository: Repository<District>,
   ) {}
   async display(payload) {
-    const user = await this.userRepository.findOneBy({ id: payload.id });
+    const user = await this.userRepository.findOne({
+      where: { id: payload.id },
+      select: dataSelectedToGet as [],
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -35,7 +40,9 @@ export class MyAccountService {
 
   async update(payload, updateMyAccountDto: UpdateMyAccountDto) {
     // check user
-    const user = await this.userRepository.findOneBy({ id: payload.id });
+    const user = await this.userRepository.findOne({
+      where: { id: payload.id },
+    });
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -93,26 +100,7 @@ export class MyAccountService {
     // get updated user
     const updatedUser = await this.userRepository.findOne({
       where: { id: payload.id },
-      select: {
-        id: true,
-        avatar: true,
-        firstName: true,
-        lastName: true,
-        age: true,
-        gender: true,
-        shamCashId: true,
-        role: true,
-        createdAt: true,
-        phoneNumber: true,
-        city: {
-          code: true,
-          name: true,
-        },
-        district: {
-          id: true,
-          name: true,
-        },
-      },
+      select: dataSelectedToGet as [],
     });
 
     if (!updatedUser) {

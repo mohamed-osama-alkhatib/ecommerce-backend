@@ -1,57 +1,89 @@
-// jwt-auth.guard.ts
-// libs
 import {
   CanActivate,
   ExecutionContext,
   Injectable,
   UnauthorizedException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { JwtService } from '@nestjs/jwt';
 import { Reflector } from '@nestjs/core';
-// decorators
+import { ConfigService } from '@nestjs/config';
 import { Roles } from '../decorators/roles.decorator';
+
+// إذا لم تقم بوضع هذا الجزء في ملف منفصل (كما شرحنا بالأعلى)، اتركه هنا.
+// أما إذا وضعته في ملف منفصل، يمكنك حذف هذا الجزء من هنا واستيراد JwtPayload فقط.
+export interface JwtPayload {
+  id: number;
+  phoneNumber: string;
+  role: string;
+}
+
+declare module 'express' {
+  export interface Request {
+    user?: JwtPayload;
+  }
+}
+// ---------------------------------------------------------
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
-    private reflector: Reflector,
+    private readonly reflector: Reflector,
+    private readonly configService: ConfigService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<Request>();
     const token = this.extractTokenFromHeader(request);
-    const roles = this.reflector.get(Roles, context.getHandler());
 
-    if (!roles) {
-      return true;
-    }
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('Token not found');
     }
+
+    // --- 1. التحقق من التوكن (Authentication) ---
     try {
-      // 💡 Here the JWT secret key that's used for verifying the payload
-      // is the key that was passed in the JwtModule
-      const payload = await this.jwtService.verifyAsync(token, {
-        secret: process.env.JWT_SECRET,
+      const secret = this.configService.get<string>('JWT_SECRET');
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(token, {
+        secret,
       });
 
-      if (!payload._id) request['user'] = payload;
-
-      if (
-        !payload.role ||
-        payload.role === '' ||
-        !roles.includes(payload.role)
-      ) {
-        throw new UnauthorizedException();
+      if (!payload.id) {
+        throw new UnauthorizedException('Invalid token payload');
       }
-      // 💡 We're assigning the payload to the request object here
-      // so that we can access it in our route handlers
-      request['user'] = payload;
-    } catch {
-      throw new UnauthorizedException();
+
+      // بفضل دمج الأنواع (Declaration Merging)، TypeScript الآن يعرف أن request.user موجود
+      request.user = payload;
+    } catch (error) {
+      // تمرير الأخطاء التي قمنا برمياها مسبقاً كما هي
+      if (
+        error instanceof UnauthorizedException ||
+        error instanceof ForbiddenException
+      ) {
+        throw error;
+      }
+
+      // أي خطأ آخر (مثل انتهاء صلاحية التوكن) سيتم تحويله إلى هذا الخطأ
+      throw new UnauthorizedException('Invalid or expired token');
     }
+
+    // --- 2. التحقق من الصلاحيات (Authorization) ---
+    const requiredRoles = this.reflector.getAllAndOverride<string[]>(Roles, [
+      context.getHandler(),
+      context.getClass(),
+    ]);
+
+    // إذا كان المسار لا يتطلب صلاحيات معينة، اسمح بالمرور
+    if (!requiredRoles || requiredRoles.length === 0) {
+      return true;
+    }
+
+    // التحقق مما إذا كان دور المستخدم ضمن الأدوار المطلوبة
+    if (!request.user || !requiredRoles.includes(request.user.role)) {
+      throw new ForbiddenException('Access denied: insufficient permissions');
+    }
+
     return true;
   }
 

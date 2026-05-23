@@ -28,8 +28,8 @@ export class MyAccountController {
   // @Route GET user
   // @Accuss "admin" or "employee" or "client"
   // =========================================================
-  @Roles(['admin', 'employee', 'client'])
   @UseGuards(AuthGuard)
+  @Roles(['admin', 'employee', 'client'])
   @Get()
   display(@Req() req) {
     return this.myAccountService.display(req.user);
@@ -40,8 +40,8 @@ export class MyAccountController {
   // @Accuss "admin" or "employee" or "client"
   // =========================================================
   @Patch('')
-  @Roles(['admin', 'employee', 'client'])
   @UseGuards(AuthGuard)
+  @Roles(['admin', 'employee', 'client'])
   update(
     @Req() req,
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
@@ -56,8 +56,8 @@ export class MyAccountController {
   // @Accuss "admin" or "employee" or "client"
   // =========================================================
   @Delete('')
-  @Roles(['admin', 'employee', 'client'])
   @UseGuards(AuthGuard)
+  @Roles(['admin', 'employee', 'client'])
   delete(@Req() req) {
     return this.myAccountService.delete(req.user);
   }
