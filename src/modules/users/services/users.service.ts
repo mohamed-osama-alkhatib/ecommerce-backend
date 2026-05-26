@@ -66,9 +66,9 @@ export class UsersService {
       throw new NotFoundException('District does not belong to selected city');
     }
 
-    // phone number
+    // email
     const ifUserExist = await this.userRepository.findOne({
-      where: { phoneNumber: createUserDto.phoneNumber },
+      where: { email: createUserDto.email },
     });
 
     if (ifUserExist) {
@@ -144,7 +144,7 @@ export class UsersService {
         'user.firstName',
         'user.lastName',
         'user.age',
-        'user.phoneNumber',
+        'user.email',
         'user.createdAt',
         'user.gender',
         'user.shamCashId',

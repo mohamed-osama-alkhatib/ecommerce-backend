@@ -2,8 +2,10 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
+import { MailerModule } from '@nestjs-modules/mailer';
 // modules
 import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
 // entities
 import { User } from './modules/users/entities/user.entity';
 import { City } from './modules/users/entities/city.entity';
@@ -11,7 +13,6 @@ import { District } from './modules/users/entities/district.entity';
 // seeds
 import { CitySeed } from './modules/users/seeds/city.seed';
 import { DistrictSeed } from './modules/users/seeds/district.seed';
-import { AuthModule } from './modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -36,6 +37,16 @@ import { AuthModule } from './modules/auth/auth.module';
       global: true,
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '60s' },
+    }),
+    MailerModule.forRoot({
+      transport: {
+        // host: process.env.EMAIL_HOST,
+        service: process.env.EMAIL_SERVICE,
+        auth: {
+          user: process.env.EMAIL_NAME,
+          pass: process.env.EMAIL_APP_PASSWORD,
+        },
+      },
     }),
     AuthModule,
   ],

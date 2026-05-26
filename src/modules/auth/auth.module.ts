@@ -1,8 +1,14 @@
+// auth.module.ts
+
+// libs
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthController } from './auth.controller';
-import { User } from '../users/entities/user.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
+// services
+import { AuthService } from './auth.service';
+// controllers
+import { AuthController } from './auth.controller';
+// entities
+import { User } from '../users/entities/user.entity';
 import { District } from '../users/entities/district.entity';
 import { City } from '../users/entities/city.entity';
 

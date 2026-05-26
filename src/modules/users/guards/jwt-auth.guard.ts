@@ -15,7 +15,7 @@ import { Roles } from '../decorators/roles.decorator';
 // أما إذا وضعته في ملف منفصل، يمكنك حذف هذا الجزء من هنا واستيراد JwtPayload فقط.
 export interface JwtPayload {
   id: number;
-  phoneNumber: string;
+  email: string;
   role: string;
 }
 

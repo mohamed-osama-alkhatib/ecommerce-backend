@@ -1,11 +1,11 @@
-// signin-user.dto.ts
+// verify-code.dto.ts
 
 // libs
 import { PartialType } from '@nestjs/mapped-types';
 // dto
 import { UserDto } from '../../users/dto/user.dto';
 
-export class SignInUserDto extends PartialType(UserDto) {
+export class VerifyCodeDto extends PartialType(UserDto) {
   email!: string;
-  password!: string;
+  verificationCode!: string;
 }

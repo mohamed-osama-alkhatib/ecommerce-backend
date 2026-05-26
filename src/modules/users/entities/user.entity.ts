@@ -30,7 +30,7 @@ export class User {
   // =========================================================
   // ID
   // =========================================================
-  @PrimaryColumn({ type: 'varchar', length: 16 })
+  @PrimaryColumn({ type: 'varchar', length: 50 })
   id!: string;
 
   // =========================================================
@@ -73,8 +73,8 @@ export class User {
   // =========================================================
   // PHONE NUMBER
   // =========================================================
-  @Column({ type: 'varchar', length: 10, unique: true })
-  phoneNumber!: string;
+  @Column({ type: 'varchar', length: 50, unique: true })
+  email!: string;
 
   // =========================================================
   // PASSWORD
@@ -87,17 +87,12 @@ export class User {
   // =========================================================
   @CreateDateColumn()
   createdAt!: Date;
-  // =========================================================
-  // SHAMCHASH ID
-  // =========================================================
-  @Column({ type: 'varchar', length: 16, unique: true, nullable: true })
-  shamCashId?: string;
 
   // =========================================================
   // VERIFICATION CODE
   // =========================================================
   @Column({ type: 'varchar', length: 6, nullable: true })
-  verificationCode?: string;
+  verificationCode?: string | null;
 
   // =========================================================
   // IS ACTIVE
@@ -131,6 +126,13 @@ export class User {
   @BeforeInsert()
   generateId() {
     const year = new Date().getFullYear();
-    this.id = `${year}zl${this.phoneNumber}`;
+    const month = new Date().getMonth() + 1;
+    const day = new Date().getDate();
+    const hour = new Date().getHours();
+    const min = new Date().getMinutes();
+    const sec = new Date().getSeconds();
+    const ms = new Date().getMilliseconds();
+    const random = Math.floor(Math.random() * 1000);
+    this.id = `${year}zl${month}zl${day}zl${hour}zl${min}zl${sec}zl${ms}zl${random}`;
   }
 }

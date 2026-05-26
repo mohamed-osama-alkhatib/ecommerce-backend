@@ -2,7 +2,7 @@
 
 export interface JwtPayload {
   id: number;
-  phoneNumber: string;
+  email: string;
   role: string;
 }
 
