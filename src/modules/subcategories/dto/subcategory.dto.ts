@@ -1,12 +1,13 @@
-import { IsString, IsUrl, Length } from 'class-validator';
-import { Category } from '../../../common/entities/category.entity';
+import { IsNotEmpty, IsString, IsUrl, IsUUID, Length } from 'class-validator';
 
 export class SubcategoryDto {
   @IsString({ message: 'Name must be a string' })
+  @IsNotEmpty({ message: 'Name is required' })
   @Length(1, 50, { message: 'Name must be between 1 and 50 characters' })
   name!: string;
 
   @IsUrl({}, { message: 'Image must be a valid URL' })
+  @IsNotEmpty({ message: 'Image is required' })
   @Length(0, 255, { message: 'Image must be between 0 and 255 characters' })
   image!: string;
 
@@ -16,5 +17,8 @@ export class SubcategoryDto {
   })
   description?: string;
 
-  category!: Category;
+  @IsUUID('4', { message: 'Category must be a valid UUID' })
+  @IsNotEmpty({ message: 'Category ID is required' })
+  @IsString({ message: 'Category must be a string' })
+  category!: string;
 }
