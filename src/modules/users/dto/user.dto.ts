@@ -3,19 +3,17 @@
 // libs
 import {
   IsString,
-  IsInt,
-  Min,
-  Max,
   Length,
   IsEnum,
   Matches,
   IsUrl,
   IsBoolean,
   IsOptional,
+  IsDate,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 // entities
-import { Gender, Role } from '../entities/user.entity';
+import { Gender, Role } from '../../../common/entities/user.entity';
 
 export class UserDto {
   // =========================================================
@@ -42,13 +40,11 @@ export class UserDto {
   })
   lastName!: string;
   // =========================================================
-  // AGE
+  // DATE OF BIRTH
   // =========================================================
-  @Type(() => Number)
-  @IsInt({ message: 'Age must be a number' })
-  @Min(18, { message: 'Age must be at least 18' })
-  @Max(120, { message: 'Age must not exceed 120' })
-  age!: number;
+  @Type(() => Date)
+  @IsDate({ message: 'Date of birth must be a valid date' })
+  dateOfBirth!: Date;
   // =========================================================
   // EMAIL
   // =========================================================

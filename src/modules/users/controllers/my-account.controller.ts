@@ -15,9 +15,9 @@ import { MyAccountService } from '../services/my-account.service';
 // dto
 import { UpdateMyAccountDto } from '../dto/update-my-account.dto';
 // guards
-import { AuthGuard } from '../guards/jwt-auth.guard';
+import { AuthGuard } from '../../../common/guards/jwt-auth.guard';
 // decorators
-import { Roles } from '../decorators/roles.decorator';
+import { Roles } from '../../../common/decorators/roles.decorator';
 
 @Controller('my-account')
 export class MyAccountController {

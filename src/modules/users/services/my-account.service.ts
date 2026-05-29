@@ -7,11 +7,9 @@ import * as bcrypt from 'bcrypt';
 // dto
 import { UpdateMyAccountDto } from '../dto/update-my-account.dto';
 // entities
-import { User } from '../entities/user.entity';
-import { City } from '../entities/city.entity';
-import { District } from '../entities/district.entity';
-// data
-import { dataSelectedToGet } from '../data/get.data';
+import { User } from '../../../common/entities/user.entity';
+import { City } from '../../../common/entities/city.entity';
+import { District } from '../../../common/entities/district.entity';
 
 @Injectable()
 export class MyAccountService {
@@ -23,14 +21,12 @@ export class MyAccountService {
     @InjectRepository(District)
     private districtRepository: Repository<District>,
   ) {}
+
+  // =========================================================
+  // DISPLAY
+  // =========================================================
   async display(payload) {
-    const user = await this.userRepository.findOne({
-      where: { id: payload.id },
-      select: dataSelectedToGet as [],
-    });
-    if (!user) {
-      throw new NotFoundException('User not found');
-    }
+    const user = await this.findOneDataOnly(payload.id);
     return {
       status: 200,
       message: 'User found',
@@ -38,10 +34,17 @@ export class MyAccountService {
     };
   }
 
+  // =========================================================
+  // UPDATE
+  // =========================================================
   async update(payload, updateMyAccountDto: UpdateMyAccountDto) {
     // check user
     const user = await this.userRepository.findOne({
       where: { id: payload.id },
+      relations: {
+        city: true,
+        district: true,
+      },
     });
     if (!user) {
       throw new NotFoundException('User not found');
@@ -98,14 +101,7 @@ export class MyAccountService {
     await this.userRepository.update(payload.id, updateData);
 
     // get updated user
-    const updatedUser = await this.userRepository.findOne({
-      where: { id: payload.id },
-      select: dataSelectedToGet as [],
-    });
-
-    if (!updatedUser) {
-      throw new NotFoundException('User not found after update');
-    }
+    const updatedUser = await this.findOneDataOnly(payload.id);
 
     return {
       status: 200,
@@ -114,6 +110,9 @@ export class MyAccountService {
     };
   }
 
+  // =========================================================
+  // DELETE
+  // =========================================================
   async delete(payload) {
     // check user
     const user = await this.userRepository.findOneBy({ id: payload.id });
@@ -126,5 +125,37 @@ export class MyAccountService {
       status: 200,
       message: 'User deleted successfully',
     };
+  }
+
+  // =========================================================
+  // HELPERS (QueryBuilder)
+  // =========================================================
+  private async findOneDataOnly(id: string): Promise<User> {
+    const user = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoin('user.city', 'city')
+      .leftJoin('user.district', 'district')
+      .select([
+        'user.id',
+        'user.avatar',
+        'user.firstName',
+        'user.lastName',
+        'user.dateOfBirth',
+        'user.email',
+        'user.createdAt',
+        'user.gender',
+        'user.role',
+        'city.code',
+        'city.name',
+        'district.id',
+        'district.name',
+      ])
+      .where('user.id = :id', { id })
+      .getOne();
+
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
 }

@@ -10,9 +10,9 @@ import { MyAccountService } from './services/my-account.service';
 import { UsersController } from './controllers/users.controller';
 import { MyAccountController } from './controllers/my-account.controller';
 // entities
-import { User } from './entities/user.entity';
-import { City } from './entities/city.entity';
-import { District } from './entities/district.entity';
+import { User } from '../../common/entities/user.entity';
+import { City } from '../../common/entities/city.entity';
+import { District } from '../../common/entities/district.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, City, District])],

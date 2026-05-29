@@ -3,13 +3,13 @@
 // libs
 import { Body, Controller, Post, ValidationPipe } from '@nestjs/common';
 // services
-import { AuthService } from './auth.service';
+import { AuthService } from '../services/auth.service';
 // dto
-import { SignUpUserDto } from './dto/signup-user.dto';
-import { SignInUserDto } from './dto/signin-user.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
-import { VerifyCodeDto } from './dto/verify-code.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
+import { SignUpUserDto } from '../dto/signup-user.dto';
+import { SignInUserDto } from '../dto/signin-user.dto';
+import { ResetPasswordDto } from '../dto/reset-password.dto';
+import { VerifyCodeDto } from '../dto/verify-code.dto';
+import { ChangePasswordDto } from '../dto/change-password.dto';
 
 @Controller('auth')
 export class AuthController {

@@ -1,35 +1,33 @@
-// Users.controller.ts
-// libs
 import {
   Controller,
+  Get,
   Post,
   Body,
-  Get,
-  UseGuards,
-  ValidationPipe,
-  Param,
   Patch,
+  Param,
   Delete,
+  ValidationPipe,
+  UseGuards,
   Query,
 } from '@nestjs/common';
 // services
-import { UsersService } from '../services/users.service';
+import { CategoriesService } from '../services/categories.service';
 // dto
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
-import { FindUsersDto } from '../dto/find-users.dto';
+import { CreateCategoryDto } from '../dto/create-category.dto';
+import { UpdateCategoryDto } from '../dto/update-category.dto';
 // guards
 import { AuthGuard } from '../../../common/guards/jwt-auth.guard';
 // decorators
 import { Roles } from '../../../common/decorators/roles.decorator';
+import { FindCategoriesDto } from '../dto/find-categories.dto';
 
-@Controller('users')
-export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+@Controller('categories')
+export class CategoriesController {
+  constructor(private readonly categoriesService: CategoriesService) {}
 
   // =========================================================
-  // @Docs admin & employee can create user
-  // @Route POST user
+  // @Docs admin & employee can create category
+  // @Route POST category
   // @Accuss private "admin & employee"
   // =========================================================
   @Post()
@@ -37,38 +35,34 @@ export class UsersController {
   @Roles(['admin', 'employee'])
   create(
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
-    createUserDto: CreateUserDto,
+    createCategoryDto: CreateCategoryDto,
   ) {
-    return this.usersService.create(createUserDto);
+    return this.categoriesService.create(createCategoryDto);
   }
 
   // =========================================================
-  // @Docs admin can get all users
-  // @Route GET users
-  // @Accuss private "admin"
+  // @Docs admin can get all categories
+  // @Route GET categories
+  // @Accuss public
   // =========================================================
   @Get()
-  @UseGuards(AuthGuard)
-  @Roles(['admin'])
-  findAll(@Query() query: FindUsersDto) {
-    return this.usersService.findAll(query);
+  findAll(@Query() query: FindCategoriesDto) {
+    return this.categoriesService.findAll(query);
   }
-  // =========================================================
-  // @Docs admin & employee can get user
-  // @Route GET one user
-  // @Accuss private "admin & employee"
-  // =========================================================
 
+  // =========================================================
+  // @Docs admin & employee can get category
+  // @Route GET one category/id
+  // @Accuss public
+  // =========================================================
   @Get(':id')
-  @UseGuards(AuthGuard)
-  @Roles(['admin', 'employee'])
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+    return this.categoriesService.findOne(id);
   }
 
   // =========================================================
-  // @Docs admin & employee can update user
-  // @Route PATCH user
+  // @Docs admin & employee can update category
+  // @Route PATCH category/id
   // @Accuss private "admin & employee"
   // =========================================================
   @Patch(':id')
@@ -77,20 +71,20 @@ export class UsersController {
   update(
     @Param('id') id: string,
     @Body(new ValidationPipe({ forbidNonWhitelisted: true }))
-    UpdateUserDto: UpdateUserDto,
+    updateCategoryDto: UpdateCategoryDto,
   ) {
-    return this.usersService.update(id, UpdateUserDto);
+    return this.categoriesService.update(id, updateCategoryDto);
   }
 
   // =========================================================
-  // @Docs admin can delete user
-  // @Route DELETE user
+  // @Docs admin can delete category
+  // @Route DELETE category/id
   // @Accuss private "admin"
   // =========================================================
   @Delete(':id')
   @UseGuards(AuthGuard)
   @Roles(['admin'])
-  delete(@Param('id') id: string) {
-    return this.usersService.delete(id);
+  remove(@Param('id') id: string) {
+    return this.categoriesService.remove(id);
   }
 }

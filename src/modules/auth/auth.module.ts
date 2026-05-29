@@ -4,13 +4,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 // services
-import { AuthService } from './auth.service';
+import { AuthService } from './services/auth.service';
 // controllers
-import { AuthController } from './auth.controller';
+import { AuthController } from './controllers/auth.controller';
 // entities
-import { User } from '../users/entities/user.entity';
-import { District } from '../users/entities/district.entity';
-import { City } from '../users/entities/city.entity';
+import { User } from '../../common/entities/user.entity';
+import { District } from '../../common/entities/district.entity';
+import { City } from '../../common/entities/city.entity';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User, City, District])],

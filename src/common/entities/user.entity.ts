@@ -2,12 +2,11 @@
 // libs
 import {
   Entity,
-  PrimaryColumn,
   Column,
   CreateDateColumn,
-  BeforeInsert,
   ManyToOne,
   JoinColumn,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 // entities
 import { City } from './city.entity';
@@ -30,7 +29,7 @@ export class User {
   // =========================================================
   // ID
   // =========================================================
-  @PrimaryColumn({ type: 'varchar', length: 50 })
+  @PrimaryGeneratedColumn('uuid')
   id!: string;
 
   // =========================================================
@@ -52,26 +51,26 @@ export class User {
   lastName!: string;
 
   // =========================================================
-  // AGE
+  // DATE OF BIRTH
   // =========================================================
-  @Column({ type: 'int' })
-  age!: number;
+  @Column({ type: 'date' })
+  dateOfBirth!: Date;
 
   // =========================================================
   // CITY
   // =========================================================
-  @ManyToOne(() => City, { eager: true })
+  @ManyToOne(() => City)
   @JoinColumn({ name: 'city_code' })
   city!: City;
   // =========================================================
   // DISTRICT
   // =========================================================
-  @ManyToOne(() => District, { eager: true })
+  @ManyToOne(() => District)
   @JoinColumn({ name: 'district_id' })
   district!: District;
 
   // =========================================================
-  // PHONE NUMBER
+  // EMAIL
   // =========================================================
   @Column({ type: 'varchar', length: 50, unique: true })
   email!: string;
@@ -119,20 +118,7 @@ export class User {
     nullable: true,
   })
   role?: Role;
-
   // =========================================================
-  // BL FOR GENERATING ID
+  //
   // =========================================================
-  @BeforeInsert()
-  generateId() {
-    const year = new Date().getFullYear();
-    const month = new Date().getMonth() + 1;
-    const day = new Date().getDate();
-    const hour = new Date().getHours();
-    const min = new Date().getMinutes();
-    const sec = new Date().getSeconds();
-    const ms = new Date().getMilliseconds();
-    const random = Math.floor(Math.random() * 1000);
-    this.id = `${year}zl${month}zl${day}zl${hour}zl${min}zl${sec}zl${ms}zl${random}`;
-  }
 }

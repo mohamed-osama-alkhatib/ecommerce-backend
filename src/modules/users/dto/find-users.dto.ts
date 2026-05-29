@@ -9,7 +9,7 @@ import {
   Max,
   Matches,
 } from 'class-validator';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 
 export class FindUsersDto {
   // =========================================================
@@ -34,7 +34,7 @@ export class FindUsersDto {
   // =========================================================
 
   @IsOptional()
-  @IsIn(['createdAt', 'firstName', 'lastName', 'age', 'role'])
+  @IsIn(['createdAt', 'firstName', 'lastName', 'dateOfBirth', 'role'])
   sort?: string = 'createdAt';
 
   // =========================================================
@@ -76,16 +76,4 @@ export class FindUsersDto {
   @IsOptional()
   @Matches(/^\d{7}$/)
   district?: string;
-
-  // =========================================================
-  // AGES
-  // =========================================================
-
-  @IsOptional()
-  @Transform(({ value }) => {
-    if (!value) return [];
-
-    return value.split(',').map((age: string) => age.trim());
-  })
-  ages?: string[];
 }

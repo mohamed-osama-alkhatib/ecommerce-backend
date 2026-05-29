@@ -14,17 +14,15 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { MailerService } from '@nestjs-modules/mailer';
 // entities
-import { User } from '../users/entities/user.entity';
-import { District } from '../users/entities/district.entity';
-import { City } from '../users/entities/city.entity';
+import { User } from '../../../common/entities/user.entity';
+import { District } from '../../../common/entities/district.entity';
+import { City } from '../../../common/entities/city.entity';
 // dto
-import { SignUpUserDto } from './dto/signup-user.dto';
-import { SignInUserDto } from './dto/signin-user.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
-import { VerifyCodeDto } from './dto/verify-code.dto';
-import { ChangePasswordDto } from './dto/change-password.dto';
-// data
-import { dataSelectedToGet } from '../users/data/get.data';
+import { SignUpUserDto } from '../dto/signup-user.dto';
+import { SignInUserDto } from '../dto/signin-user.dto';
+import { ResetPasswordDto } from '../dto/reset-password.dto';
+import { VerifyCodeDto } from '../dto/verify-code.dto';
+import { ChangePasswordDto } from '../dto/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -90,7 +88,7 @@ export class AuthService {
 
     const password = await bcrypt.hash(signUpUserDto.password, saltOrRounds);
 
-    const newUser = this.userRepository.create({
+    const newUser = await this.userRepository.create({
       ...rest,
       city: isCity,
       district: isDistrict,
@@ -98,16 +96,7 @@ export class AuthService {
       isActive: true,
     });
 
-    const savedUser = await this.userRepository.save(newUser);
-
-    const createdUser = await this.userRepository.findOne({
-      where: { id: savedUser.id },
-      select: dataSelectedToGet as [],
-    });
-
-    if (!createdUser) {
-      throw new NotFoundException('User not found after creation');
-    }
+    const createdUser = await this.userRepository.save(newUser);
 
     const payload = {
       id: createdUser.id,
@@ -123,7 +112,7 @@ export class AuthService {
       status: 201,
       message: 'User signed up successfully',
       data: createdUser,
-      accussToken: token,
+      accessToken: token,
     };
   }
 
@@ -133,7 +122,6 @@ export class AuthService {
   async signIn(signInUserDto: SignInUserDto) {
     const user = await this.userRepository.findOne({
       where: { email: signInUserDto.email },
-      select: [...dataSelectedToGet, 'password'] as (keyof User)[],
     });
     if (!user)
       throw new NotFoundException('User with this email does not exist');
@@ -151,13 +139,33 @@ export class AuthService {
       secret: process.env.JWT_SECRET,
     });
 
-    const { password, ...userWithoutPassword } = user;
+    const registeredUser = await this.userRepository
+      .createQueryBuilder('user')
+      .leftJoin('user.city', 'city')
+      .leftJoin('user.district', 'district')
+      .select([
+        'user.id',
+        'user.avatar',
+        'user.firstName',
+        'user.lastName',
+        'user.dateOfBirth',
+        'user.email',
+        'user.createdAt',
+        'user.gender',
+        'user.role',
+        'city.code',
+        'city.name',
+        'district.id',
+        'district.name',
+      ])
+      .where('user.email = :email', { email: user.email })
+      .getOne();
 
     return {
       status: 201,
       message: 'User signed in successfully',
-      data: userWithoutPassword,
-      accussToken: token,
+      data: registeredUser,
+      accessToken: token,
     };
   }
 

@@ -1,3 +1,6 @@
+// app.module.ts
+
+// libs
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -6,13 +9,20 @@ import { MailerModule } from '@nestjs-modules/mailer';
 // modules
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
-// entities
-import { User } from './modules/users/entities/user.entity';
-import { City } from './modules/users/entities/city.entity';
-import { District } from './modules/users/entities/district.entity';
+import { CompaniesModule } from './modules/companies/companies.module';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { SubcategoriesModule } from './modules/subcategories/subcategories.module';
 // seeds
-import { CitySeed } from './modules/users/seeds/city.seed';
-import { DistrictSeed } from './modules/users/seeds/district.seed';
+import { CitySeed } from './common/seeds/city.seed';
+import { DistrictSeed } from './common/seeds/district.seed';
+// entities
+import { City } from './common/entities/city.entity';
+import { District } from './common/entities/district.entity';
+import { User } from './common/entities/user.entity';
+import { Category } from './common/entities/category.entity';
+import { Subcategory } from './common/entities/subcategory.entity';
+import { Company } from './common/entities/company.entity';
+import { Representative } from './common/entities/representative.entity';
 
 @Module({
   imports: [
@@ -27,20 +37,34 @@ import { DistrictSeed } from './modules/users/seeds/district.seed';
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, City, District],
+      entities: [
+        City,
+        District,
+        User,
+        Category,
+        Subcategory,
+        Company,
+        Representative,
+      ],
       synchronize: true,
       logging: false,
     }),
-    TypeOrmModule.forFeature([City, District]),
-    UsersModule,
+    TypeOrmModule.forFeature([
+      User,
+      City,
+      District,
+      Category,
+      Subcategory,
+      Company,
+      Representative,
+    ]),
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '60s' },
+      signOptions: { expiresIn: '600s' },
     }),
     MailerModule.forRoot({
       transport: {
-        // host: process.env.EMAIL_HOST,
         service: process.env.EMAIL_SERVICE,
         auth: {
           user: process.env.EMAIL_NAME,
@@ -48,9 +72,12 @@ import { DistrictSeed } from './modules/users/seeds/district.seed';
         },
       },
     }),
+    UsersModule,
     AuthModule,
+    CompaniesModule,
+    CategoriesModule,
+    SubcategoriesModule,
   ],
-  controllers: [],
   providers: [CitySeed, DistrictSeed],
 })
 export class AppModule {}
