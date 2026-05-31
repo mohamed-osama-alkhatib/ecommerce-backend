@@ -30,10 +30,10 @@ export class Company {
   name!: string;
 
   @Column({ type: 'varchar', nullable: true })
-  logo!: string;
+  logo?: string;
 
   @Column({ type: 'text', nullable: true })
-  description!: string;
+  description?: string;
 
   @Column({ type: 'varchar', length: 50, nullable: true })
   complaintNumber!: string;
@@ -43,9 +43,6 @@ export class Company {
 
   @Column({ type: 'varchar', unique: true })
   taxNumber!: string;
-
-  @Column({ type: 'decimal', precision: 2, scale: 1, default: 0 })
-  rating!: number;
 
   @Column({ type: 'enum', enum: WorkingDays, array: true, default: [] })
   workingDays!: WorkingDays[];

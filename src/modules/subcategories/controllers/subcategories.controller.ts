@@ -22,8 +22,8 @@ export class SubcategoriesController {
   constructor(private readonly subcategoriesService: SubcategoriesService) {}
 
   // =========================================================
-  // @Docs admin & employee can create category
-  // @Route POST category
+  // @Docs admin & employee can create subcategory
+  // @Route POST subcategory
   // @Accuss private "admin & employee"
   // =========================================================
   @Post()
@@ -36,17 +36,34 @@ export class SubcategoriesController {
     return this.subcategoriesService.create(createSubcategoryDto);
   }
 
+  // =========================================================
+  // @Docs admin can get all subcategories
+  // @Route GET subcategories
+  // @Accuss public
+  // =========================================================
   @Get()
   findAll(@Query() query: FindSubcategoriesDto) {
     return this.subcategoriesService.findAll(query);
   }
 
+  // =========================================================
+  // @Docs admin & employee can get subcategory
+  // @Route GET one subcategory/id
+  // @Accuss public
+  // =========================================================
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.subcategoriesService.findOne(id);
   }
 
+  // =========================================================
+  // @Docs admin & employee can update subcategory
+  // @Route PATCH subcategory/id
+  // @Accuss private "admin & employee"
+  // =========================================================
   @Patch(':id')
+  @UseGuards(AuthGuard)
+  @Roles(['admin', 'employee'])
   update(
     @Param('id') id: string,
     @Body() updateSubcategoryDto: UpdateSubcategoryDto,
@@ -54,7 +71,14 @@ export class SubcategoriesController {
     return this.subcategoriesService.update(id, updateSubcategoryDto);
   }
 
+  // =========================================================
+  // @Docs admin can delete subcategory
+  // @Route DELETE subcategory/id
+  // @Accuss private "admin"
+  // =========================================================
   @Delete(':id')
+  @UseGuards(AuthGuard)
+  @Roles(['admin'])
   remove(@Param('id') id: string) {
     return this.subcategoriesService.remove(id);
   }

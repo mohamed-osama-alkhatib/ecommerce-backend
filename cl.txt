@@ -4,6 +4,12 @@ nest g resource modules/users
  
 nest g resource modules/auth  
 
+nest g resource modules/categories  
+
+nest g resource modules/subcategories
+
+nest g resource modules/companies
+
 ------------------------
 
 npm install @nestjs/typeorm typeorm pg  
