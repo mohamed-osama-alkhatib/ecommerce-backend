@@ -1,9 +1,10 @@
 import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateCompanyDto } from './dto/create-company.dto';
-import { UpdateCompanyDto } from './dto/update-company.dto';
-import { Repository } from 'typeorm';
+import { CreateCompanyDto } from '../dto/create-company.dto';
+import { UpdateCompanyDto } from '../dto/update-company.dto';
+import { DeepPartial, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Company } from '../../common/entities/company.entity';
+import { Company } from '../../../common/entities/company.entity';
+import { City } from '../../../common/entities/city.entity';
 
 @Injectable()
 export class CompaniesService {
@@ -24,7 +25,13 @@ export class CompaniesService {
       throw new HttpException('Company already exist', 400);
     }
 
-    const companyInstance = this.companyRepository.create(createCompanyDto);
+    const citiesObjects = (createCompanyDto.servedCities?.map((code) => ({
+      code,
+    })) || []) as DeepPartial<City>[];
+    const companyInstance = this.companyRepository.create({
+      ...createCompanyDto,
+      servedCities: citiesObjects,
+    });
     const createdCompany = await this.companyRepository.save(companyInstance);
 
     return {
@@ -115,10 +122,17 @@ export class CompaniesService {
       throw new NotFoundException('Company not found');
     }
 
-    await this.companyRepository.update(id, updateCompanyDto);
+    const { servedCities, ...restOfDto } = updateCompanyDto;
 
-    const updatedCompany = await this.companyRepository.findOne({
-      where: { id },
+    let citiesObjects: any[] | undefined = undefined;
+    if (servedCities) {
+      citiesObjects = servedCities.map((code) => ({ code }));
+    }
+
+    const updatedCompany = await this.companyRepository.save({
+      id: id,
+      ...restOfDto,
+      servedCities: citiesObjects,
     });
 
     return {

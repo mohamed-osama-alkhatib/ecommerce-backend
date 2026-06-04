@@ -10,12 +10,12 @@ import {
   UseGuards,
   Query,
 } from '@nestjs/common';
-import { CompaniesService } from './companies.service';
-import { CreateCompanyDto } from './dto/create-company.dto';
-import { UpdateCompanyDto } from './dto/update-company.dto';
-import { AuthGuard } from '../../common/guards/jwt-auth.guard';
-import { Roles } from '../../common/decorators/roles.decorator';
-import { FindCompaniesDto } from './dto/find-companies.dto';
+import { CompaniesService } from '../services/companies.service';
+import { CreateCompanyDto } from '../dto/create-company.dto';
+import { UpdateCompanyDto } from '../dto/update-company.dto';
+import { AuthGuard } from '../../../common/guards/jwt-auth.guard';
+import { Roles } from '../../../common/decorators/roles.decorator';
+import { FindCompaniesDto } from '../dto/find-companies.dto';
 
 @Controller('companies')
 export class CompaniesController {
@@ -36,7 +36,7 @@ export class CompaniesController {
   }
 
   // =========================================================
-  // @Docs admin can get all companies
+  // @Docs user can get all companies
   // @Route GET companies
   // @Accuss public
   // =========================================================
@@ -46,7 +46,7 @@ export class CompaniesController {
   }
 
   // =========================================================
-  // @Docs admin & employee can get company
+  // @Docs user can get company
   // @Route GET one company/id
   // @Accuss public
   // =========================================================

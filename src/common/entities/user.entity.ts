@@ -3,7 +3,6 @@
 import {
   Entity,
   Column,
-  CreateDateColumn,
   ManyToOne,
   JoinColumn,
   PrimaryGeneratedColumn,
@@ -84,7 +83,7 @@ export class User {
   // =========================================================
   // CREATED AT
   // =========================================================
-  @CreateDateColumn()
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt!: Date;
 
   // =========================================================
@@ -96,7 +95,7 @@ export class User {
   // =========================================================
   // IS ACTIVE
   // =========================================================
-  @Column({ type: 'boolean', default: false, nullable: true })
+  @Column({ type: 'boolean', default: false })
   isActive?: boolean;
 
   // =========================================================

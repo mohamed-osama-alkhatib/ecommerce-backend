@@ -3,7 +3,6 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
@@ -23,7 +22,7 @@ export class Subcategory {
   @Column({ type: 'text', nullable: true })
   description!: string;
 
-  @CreateDateColumn()
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt!: Date;
 
   @ManyToOne(() => Category, (category) => category.subcategories, {

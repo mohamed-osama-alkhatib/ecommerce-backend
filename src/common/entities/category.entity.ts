@@ -1,11 +1,5 @@
 // category.entity.ts
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  OneToMany,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Subcategory } from './subcategory.entity';
 
 @Entity('categories')
@@ -22,7 +16,7 @@ export class Category {
   @Column({ type: 'text', nullable: true })
   description!: string;
 
-  @CreateDateColumn()
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   createdAt!: Date;
 
   @OneToMany(() => Subcategory, (subcategory) => subcategory.category, {

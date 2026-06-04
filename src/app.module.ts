@@ -23,6 +23,8 @@ import { Category } from './common/entities/category.entity';
 import { Subcategory } from './common/entities/subcategory.entity';
 import { Company } from './common/entities/company.entity';
 import { Representative } from './common/entities/representative.entity';
+import { CouponModule } from './modules/coupon/coupon.module';
+import { Coupon } from './common/entities/coupon.entity';
 
 @Module({
   imports: [
@@ -45,6 +47,7 @@ import { Representative } from './common/entities/representative.entity';
         Subcategory,
         Company,
         Representative,
+        Coupon,
       ],
       synchronize: true,
       logging: false,
@@ -57,6 +60,7 @@ import { Representative } from './common/entities/representative.entity';
       Subcategory,
       Company,
       Representative,
+      Coupon,
     ]),
     JwtModule.register({
       global: true,
@@ -77,6 +81,7 @@ import { Representative } from './common/entities/representative.entity';
     CompaniesModule,
     CategoriesModule,
     SubcategoriesModule,
+    CouponModule,
   ],
   providers: [CitySeed, DistrictSeed],
 })

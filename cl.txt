@@ -10,6 +10,7 @@ nest g resource modules/subcategories
 
 nest g resource modules/companies
 
+nest g resource modules/coupon
 ------------------------
 
 npm install @nestjs/typeorm typeorm pg  

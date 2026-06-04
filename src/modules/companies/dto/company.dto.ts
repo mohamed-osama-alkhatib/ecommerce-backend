@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import {
+  isArray,
   IsArray,
   IsDate,
   IsEnum,
@@ -9,6 +10,7 @@ import {
   Length,
 } from 'class-validator';
 import { WorkingDays } from '../../../common/entities/company.entity';
+import { City } from '../../../common/entities/city.entity';
 
 export class CompanyDto {
   // =========================================================
@@ -58,5 +60,16 @@ export class CompanyDto {
     message:
       'Working days must be one of the following: saturday, sunday, monday, tuesday, wednesday, thursday, friday',
   })
-  workingDays!: WorkingDays[];
+  workingDays?: WorkingDays[];
+  // =========================================================
+  // SERVED CITIES
+  // =========================================================
+  @IsArray({ message: 'served cities must be an array' })
+  @IsString({ each: true, message: 'Each served city must be a string' })
+  @IsEnum(City, {
+    each: true,
+    message:
+      'Served cities must be one of the following: 011, 021, 031, 041, 051, 061, 071, 081, 091, 101, 111, 121',
+  })
+  servedCities?: string[];
 }

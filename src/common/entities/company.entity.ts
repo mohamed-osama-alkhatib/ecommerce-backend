@@ -3,7 +3,6 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  CreateDateColumn,
   OneToMany,
   ManyToMany,
   JoinTable,
@@ -47,7 +46,7 @@ export class Company {
   @Column({ type: 'enum', enum: WorkingDays, array: true, default: [] })
   workingDays!: WorkingDays[];
 
-  @CreateDateColumn()
+  @Column({ type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP' })
   joinedAt!: Date;
 
   // ================= Relations =================
